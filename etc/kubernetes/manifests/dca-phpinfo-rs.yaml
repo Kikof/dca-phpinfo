@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         -
-          image: academiaonline/dca-phpinfo:latest
+          image: kikof/dca-phpinfo:latest
           name: dca-phpinfo
           ports:
             - containerPort: 8080
