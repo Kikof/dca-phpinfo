@@ -1,0 +1,36 @@
+################################################################################
+#      Copyright (C) 2024        Sebastian Francisco Colomar Bauza             #
+#      SPDX-License-Identifier:  GPL-2.0-only                                  #
+################################################################################
+name: CI-rs                                                                       #
+on:                                                                            #
+  push:                                                                        #
+    branches:                                                                  #
+    - docker                                                                     #
+jobs:                                                                          #
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: minikube
+      run: |
+        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+        sudo apt-get install ./minikube_latest_amd64.deb
+    - name: init
+      run: minikube start --driver=docker
+    - name: apply
+      run: kubectl apply -f etc/kubernetes/manifests/dca-phpinfo-rs.yaml
+    - name: test
+      run: |
+        set -x
+        while true
+          do
+            sleep 10
+            kubectl logs rs/dca-phpinfo 2>&1|grep "PHP.*started" && break
+            kubectl logs rs/dca-phpinfo 2>&1
+            kubectl get rs
+            kubectl get po
+            kubectl get all
+          done
+################################################################################
